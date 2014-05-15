@@ -7,11 +7,7 @@ Spree::Stock::Estimator.class_eval do
     parcel = build_parcel(package)
     shipment = build_shipment(from_address, to_address, parcel)
     rates = shipment.rates.sort_by { |r| r.rate.to_i }
-    shipment.buy(rates.first)
-    
     rates.each do |rate|
-      # Should we link shipping rate to the EasyPost shipping method?
-      # TODO: include easypost id stuff here
       package.shipping_rates << Spree::ShippingRate.new(
         :name => "#{rate.carrier} #{rate.service}",
         :cost => rate.rate,
@@ -20,13 +16,15 @@ Spree::Stock::Estimator.class_eval do
       )
     end
 
+    # Sets cheapest rate to be selected by default
+    package.shipping_rates.first.selected = true
+    
     package.shipping_rates
   end
 
   private
 
   def process_address(address)
-
     ep_address_attrs = {}
     # Stock locations do not have "company" attributes,
     ep_address_attrs[:company] = if address.respond_to?(:company)
