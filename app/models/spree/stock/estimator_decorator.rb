@@ -7,19 +7,24 @@ Spree::Stock::Estimator.class_eval do
     parcel = build_parcel(package)
     shipment = build_shipment(from_address, to_address, parcel)
     rates = shipment.rates.sort_by { |r| r.rate.to_i }
-    rates.each do |rate|
-      package.shipping_rates << Spree::ShippingRate.new(
-        :name => "#{rate.carrier} #{rate.service}",
-        :cost => rate.rate,
-        :easy_post_shipment_id => rate.shipment_id,
-        :easy_post_rate_id => rate.id
-      )
-    end
 
-    # Sets cheapest rate to be selected by default
-    package.shipping_rates.first.selected = true
-    
-    package.shipping_rates
+    if rates.any?
+      rates.each do |rate|
+        package.shipping_rates << Spree::ShippingRate.new(
+          :name => "#{rate.carrier} #{rate.service}",
+          :cost => rate.rate,
+          :easy_post_shipment_id => rate.shipment_id,
+          :easy_post_rate_id => rate.id
+        )
+      end
+
+      # Sets cheapest rate to be selected by default
+      package.shipping_rates.first.selected = true
+
+      package.shipping_rates
+    else
+      []
+    end
   end
 
   private
