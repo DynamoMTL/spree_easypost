@@ -1,4 +1,4 @@
-class AddNameToShippingRate < ActiveRecord::Migration
+class AddEasyPostFieldsToShippingRate < ActiveRecord::Migration
   def change
     add_column :spree_shipping_rates, :name, :string
     add_column :spree_shipping_rates, :easy_post_shipment_id, :string
