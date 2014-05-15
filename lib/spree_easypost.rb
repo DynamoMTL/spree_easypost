@@ -6,6 +6,4 @@ module Spree
 end
 
 require 'easypost'
-EasyPost.api_key = 'CvzYtuda6KRI9JjG7SAHbA'
-
 require 'spree_easypost/engine'
