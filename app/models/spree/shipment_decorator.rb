@@ -4,7 +4,13 @@ Spree::Shipment.class_eval do
   def tracking_url
     nil # TODO: Work out how to properly generate this
   end
+  
+  def shipping_method_with_easypost
+    selected_shipping_rate
+  end
 
+  alias_method_chain :shipping_method, :easypost
+  
   private
 
   def selected_easy_post_rate_id
