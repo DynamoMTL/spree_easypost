@@ -1,6 +1,7 @@
 class CreatePostageLabels < ActiveRecord::Migration
   def change
     create_table :spree_postage_labels do |t|
+      # belongs to spree shipment
       t.references :shipment
 
       t.string    :easypost_id
