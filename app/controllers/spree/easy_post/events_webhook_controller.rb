@@ -1,6 +1,6 @@
 module Spree
   module EasyPost
-    class EventWebhooksController < Spree::StoreController
+    class EventWebhooksController < ApplicationController
       require 'easypost'
 
       respond_to :json
