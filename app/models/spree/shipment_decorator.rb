@@ -35,29 +35,29 @@ Spree::Shipment.class_eval do
     easypost_shipment.buy(rate)    
     self.tracking = easypost_shipment.tracking_code
 
-    create_easypost_shipment(easypost_shipment)
-    create_postage_label(easypost_shipment)    
+    create_easypost_shipment(easypost_shipment.to_hash)
+    create_easypost_postage_label(easypost_shipment.to_hash)    
   end
 
-  def create_easypost_shipment(easypost_shipment)
+  def create_easypost_shipment(easypost_shipment_attributes)
     spree_easypost_shipment = ::Spree::EasyPost::Shipment.new
-    spree_easypost_shipment.attributes = easypost_shipment.to_hash.reject{|k,v| !spree_easypost_shipment.attributes.keys.member?(k.to_s) || k.to_s == 'id' }      
-    spree_easypost_shipment.easypost_id = easypost_shipment.id
+    spree_easypost_shipment.attributes = easypost_shipment_attributes.reject{|k,v| !spree_easypost_shipment.attributes.keys.member?(k.to_s) || k.to_s == 'id' }      
+    spree_easypost_shipment.easypost_id = easypost_shipment_attributes[:id]
     spree_easypost_shipment.order = self.order
     spree_easypost_shipment.shipment = self
     spree_easypost_shipment.save
   end
 
-  def create_easypost_ostage_label(easypost_shipment)   
-    response_attributes = JSON.parse(easypost_shipment.postage_label.to_s)
-
-    postage_label = ::Spree::EasyPost::PostageLabel.new
+  def create_easypost_postage_label(easypost_shipment_attributes)   
+    easypost_postage_label_attributes = easypost_shipment_attributes[:postage_label].to_hash
+    
+    spree_easypost_postage_label = ::Spree::EasyPost::PostageLabel.new
     # assign attributes to our new postage label, ignoring those that are not defined on our model
-    postage_label.attributes = response_attributes.reject{|k,v| !postage_label.attributes.keys.member?(k.to_s) || k.to_s == 'id' }      
-    postage_label.easypost_id = response_attributes['id']
+    spree_easypost_postage_label.attributes = easypost_postage_label_attributes.reject{|k,v| !spree_easypost_postage_label.attributes.keys.member?(k.to_s) || k.to_s == 'id' }      
+    spree_easypost_postage_label.easypost_id = easypost_postage_label_attributes[:id]
     # assign this to the current shipment
-    postage_label.shipment = self
-    postage_label.easypost_shipment_id = easypost_shipment.id
-    postage_label.save
+    spree_easypost_postage_label.shipment_id = self.id
+    spree_easypost_postage_label.easypost_shipment_id = easypost_shipment_attributes[:id]
+    spree_easypost_postage_label.save
   end
 end
