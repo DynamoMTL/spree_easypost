@@ -32,11 +32,22 @@ Spree::Shipment.class_eval do
       rate.id == selected_easy_post_rate_id
     end
 
-    easypost_shipment.buy(rate)    
-    self.tracking = easypost_shipment.tracking_code
+    begin
+      easypost_shipment.buy(rate)    
+      self.tracking = easypost_shipment.tracking_code
 
-    create_easypost_shipment(easypost_shipment.to_hash)
-    create_easypost_postage_label(easypost_shipment.to_hash)    
+      create_easypost_shipment(easypost_shipment.to_hash)
+      create_easypost_postage_label(easypost_shipment.to_hash)    
+    rescue => e
+      Rails.logger.error "Error buy_easypost_rate: #{e}"
+    end
+  end
+
+  def after_ship
+    inventory_units.each &:ship!
+    # send_shipped_email
+    touch :shipped_at
+    update_order_shipment_state
   end
 
   def create_easypost_shipment(easypost_shipment_attributes)
