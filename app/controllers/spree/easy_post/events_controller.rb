@@ -27,12 +27,14 @@ module Spree
           # find the order id this is attached to
           easypost_spree_shipment = ::Spree::EasyPost::Shipment.find_by_easypost_id(e.result.shipment_id)
           #shipment = ::Spree::Shipment.find_by_tracking(e.result.tracking_code)
-          easypost_event.order_id = easypost_spree_shipment.order_id if easypost_spree_shipment
+          if easypost_spree_shipment
+            easypost_event.order_id = easypost_spree_shipment.order_id
 
-          # send out shipping information when in transit
-          if e.result.status == 'in_transit'
-            shipment = easypost_spree_shipment.shipment
-            ShipmentMailer.shipped_email(shipment.id).deliver
+            # send out shipping information when in transit
+            if e.result.status == 'in_transit'
+              shipment = easypost_spree_shipment.shipment
+              ShipmentMailer.shipped_email(shipment.id).deliver
+            end
           end
         end
         

@@ -26,7 +26,7 @@ Deface::Override.new(:virtual_path => 'spree/admin/orders/_shipment',
           <% tracking_details.each do |tracking| %>
             <b><%= DateTime.parse(tracking["datetime"]).strftime("%m/%d/%Y at %I:%M%p") %></b><br/>
             <%= tracking["message"] %><br/>
-            <%= tracking["status"] %><br/>
+            Status: <%= tracking["status"] %><br/>
           <% end %>
         </td>
       </tr>
