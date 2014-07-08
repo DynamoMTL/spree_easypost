@@ -4,7 +4,7 @@ Deface::Override.new(:virtual_path => 'spree/admin/orders/_shipment',
   :text => '
     <fieldset class="no-border-bottom">
     <legend align="center">Tracking Details</legend>
-    <% events = ::Spree::EasyPost::Event.where(order_id: order.id).order(created_at: :asc) %>
+    <% events = ::Spree::EasyPost::Event.where(order_id: order.id).order(created_at: :desc) %>
     <table>
     <thead>
       <tr>
