@@ -9,9 +9,10 @@ module Spree
 
       # catch events webhooks from easy post
       def create
-        binding.pry
         json = JSON.parse(request.body.read)
         e = ::EasyPost::Event.receive(JSON.pretty_generate(json))        
+
+        # prepare an easy post event object for persistence
         easypost_event = ::Spree::EasyPost::Event.new(
           description: e.description,
           mode: e.mode,
@@ -22,16 +23,17 @@ module Spree
         )
        
         # create a new event object
-        if e.description == "tracker.updated"
+        if e.description == 'tracker.updated'
           # find the order id this is attached to
           easypost_spree_shipment = ::Spree::EasyPost::Shipment.find_by_easypost_id(e.result.shipment_id)
           #shipment = ::Spree::Shipment.find_by_tracking(e.result.tracking_code)
           easypost_event.order_id = easypost_spree_shipment.order_id if easypost_spree_shipment
-        end
 
-        # send out shipping information when in transit
-        if e.result.status == 'in_transit'
-
+          # send out shipping information when in transit
+          if e.result.status == 'in_transit'
+            shipment = easypost_spree_shipment.shipment
+            ShipmentMailer.shipped_email(shipment.id).deliver
+          end
         end
         
         easypost_event.save    
