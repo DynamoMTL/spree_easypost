@@ -32,20 +32,25 @@ Spree::Shipment.class_eval do
       rate.id == selected_easy_post_rate_id
     end
 
+    logger.debug 'Buying easypost rates...'
     begin
       easypost_shipment.buy(rate)    
       self.tracking = easypost_shipment.tracking_code
 
       create_easypost_shipment(easypost_shipment.to_hash)
       create_easypost_postage_label(easypost_shipment.to_hash)    
+
+      logger.info "Receive postage label: #{easypost_shipment.postage_label.label_url}"
     rescue => e
-      Rails.logger.error "Error buy_easypost_rate: #{e}"
+      logger.error "Error when buying easypost reates: #{e}"      
     end
   end
 
   def after_ship
     inventory_units.each &:ship!
-    # send_shipped_email
+    # do not send shipment confirmation email to our customers 
+    # we will do it when we receive the in_transit event from easy post later on. check Spree::EasyPost::EventsController
+    # send_shipped_email 
     touch :shipped_at
     update_order_shipment_state
   end
@@ -70,5 +75,9 @@ Spree::Shipment.class_eval do
     spree_easypost_postage_label.shipment_id = self.id
     spree_easypost_postage_label.easypost_shipment_id = easypost_shipment_attributes[:id]
     spree_easypost_postage_label.save
+  end
+
+  def logger
+    @logger ||= Logger.new("#{Rails.root}/log/spree_easypost.log")
   end
 end

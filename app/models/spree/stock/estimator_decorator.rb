@@ -1,12 +1,25 @@
 Spree::Stock::Estimator.class_eval do
   def shipping_rates(package)
+    logger.debug '---estimating shipping rates---'
+    logger.debug "package: #{package.inspect}"
+
     order = package.order
 
     from_address = process_address(package.stock_location)
+    logger.debug "from_address: #{from_address.inspect}"
+
     to_address = process_address(order.ship_address)
+    logger.debug "to_address: #{to_address.inspect}"
+
     parcel = build_parcel(package)
+    logger.debug "parcel: #{parcel.inspect}"
+
     shipment = build_shipment(from_address, to_address, parcel)
+    logger.debug "shipment: #{shipment.inspect}"
+
     rates = shipment.rates.sort_by { |r| r.rate.to_i }
+    logger.debug "rates: #{rates.inspect}"    
+    logger.debug '---end---'
 
     if rates.any?
       rates.each do |rate|
@@ -23,6 +36,10 @@ Spree::Stock::Estimator.class_eval do
 
       package.shipping_rates
     else
+      logger.info "No rates found."
+      logger.info "package: #{package.inspect}"
+      logger.info "from_address: #{from_address.inspect}"
+      logger.info "to_address: #{to_address.inspect}"
       []
     end
   end
@@ -65,5 +82,9 @@ Spree::Stock::Estimator.class_eval do
       :parcel => parcel
     )
   end
+
+  def logger
+    @logger ||= Logger.new("#{Rails.root}/log/spree_easypost.log")
+  end  
 
 end

@@ -8,7 +8,7 @@ module Spree
       skip_before_filter :verify_authenticity_token, only: [:create]
 
       # catch events webhooks from easy post
-      def create
+      def create        
         json = JSON.parse(request.body.read)
         e = ::EasyPost::Event.receive(JSON.pretty_generate(json))        
 
@@ -22,6 +22,7 @@ module Spree
           result: e.result.to_s
         )
        
+       logger.info "Receive event from Easy Post description: #{e.description} status: #{e.result.status}"
         # create a new event object
         if e.description == 'tracker.updated'
           # find the order id this is attached to
@@ -34,14 +35,19 @@ module Spree
             if e.result.status == 'in_transit'
               shipment = easypost_spree_shipment.shipment
               ShipmentMailer.shipped_email(shipment.id).deliver
+              logger.info "Sent shipment email to #{shipment.order.email}"
             end
           end
         end
         
         easypost_event.save    
-
         render nothing: true, status: 200
       end
+
+    protected
+      def logger
+        @logger ||= Logger.new("#{Rails.root}/log/spree_easypost.log")
+      end      
 
     end
   end
