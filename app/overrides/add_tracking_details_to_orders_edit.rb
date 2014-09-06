@@ -18,7 +18,7 @@ Deface::Override.new(:virtual_path => 'spree/admin/orders/_shipment',
     </thead>
     <% events.each do |event| %>
       <% result = JSON.parse(event.result) %>
-      <% next ep_shipment && unless result["shipment_id"] == ep_shipment.easypost_id %>
+      <% next unless ep_shipment && result["shipment_id"] == ep_shipment.easypost_id %>
       <% tracking_details = event.result["tracking_details"] %>
       <tr>
         <td><%= result["tracking_code"] %></td>
