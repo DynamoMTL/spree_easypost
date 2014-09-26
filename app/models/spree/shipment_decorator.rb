@@ -13,16 +13,6 @@ Spree::Shipment.class_eval do
 
   alias_method_chain :shipping_method, :easypost
   
-  private
-
-  def selected_easy_post_rate_id
-    selected_shipping_rate.easy_post_rate_id
-  end
-
-  def selected_easy_post_shipment_id
-    selected_shipping_rate.easy_post_shipment_id
-  end
-
   def easypost_shipment
     @ep_shipment ||= EasyPost::Shipment.retrieve(selected_easy_post_shipment_id)
   end
@@ -46,6 +36,16 @@ Spree::Shipment.class_eval do
     end
   end
 
+  private
+
+  def selected_easy_post_rate_id
+    selected_shipping_rate.easy_post_rate_id
+  end
+
+  def selected_easy_post_shipment_id
+    selected_shipping_rate.easy_post_shipment_id
+  end
+  
   def after_ship
     inventory_units.each &:ship!
     # do not send shipment confirmation email to our customers 
