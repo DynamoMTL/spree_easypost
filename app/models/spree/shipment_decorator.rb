@@ -33,6 +33,7 @@ Spree::Shipment.class_eval do
       logger.info "Receive postage label: #{easypost_shipment.postage_label.label_url}"
     rescue => e
       logger.error "Error when buying easypost reates: #{e}"      
+      raise e
     end
   end
 
