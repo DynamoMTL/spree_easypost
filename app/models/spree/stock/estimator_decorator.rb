@@ -5,6 +5,14 @@ Spree::Stock::Estimator.class_eval do
 
     order = package.order
 
+    # if order is already complete - return existing shipping rates
+    if order.complete?
+      order.shipments.each do |shipment|
+        return shipment.shipping_rates if package.stock_location == shipment.stock_location
+      end
+      return []
+    end    
+    
     from_address = process_address(package.stock_location)
     logger.debug "from_address: #{from_address.inspect}"
 
@@ -20,7 +28,7 @@ Spree::Stock::Estimator.class_eval do
     rates = shipment.rates.sort_by { |r| r.rate.to_i }
     logger.debug "rates: #{rates.inspect}"    
     logger.debug '---end---'
-
+    
     if rates.any?
       rates.each do |rate|
         package.shipping_rates << Spree::ShippingRate.new(
