@@ -11,8 +11,15 @@ Spree::Stock::Estimator.class_eval do
         return shipment.shipping_rates if package.stock_location == shipment.stock_location
       end
       return []
-    end    
-    
+    end
+
+    refresh_shipping_rates(package)    
+  end
+
+  def refresh_shipping_rates(package)
+    logger.debug '---refreshing rates---'
+    logger.debug "package: #{package.inspect}"
+
     from_address = process_address(package.stock_location)
     logger.debug "from_address: #{from_address.inspect}"
 
@@ -50,7 +57,7 @@ Spree::Stock::Estimator.class_eval do
       logger.info "to_address: #{to_address.inspect}"
       []
     end
-  end
+  end  
 
   private
 
