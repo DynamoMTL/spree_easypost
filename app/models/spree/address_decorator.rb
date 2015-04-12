@@ -13,6 +13,12 @@ protected
 
     if response.message.present?
       errors.add(:base, response.message)
+    else
+      self.address1 = response.street1
+      self.address2 = response.street2
+      self.city = response.city
+      self.state = Spree::State.find_by_abbr(response.state) unless state.try(:abbr) == response.state
+      self.zipcode = response.zip
     end
 
   rescue EasyPost::Error => e
