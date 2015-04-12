@@ -21,7 +21,7 @@ describe Spree::Address do
     end
 
     it "considers invalid, when message returned" do
-      response = stub(message: "Whooops")
+      response = double(message: "Whooops")
       expect(EasyPost::Address).to receive(:create_and_verify).and_return(response)
       address = build(:address, country: usa )
 
@@ -32,7 +32,7 @@ describe Spree::Address do
     it "uses what comes back from easy_post" do
       create(:state, abbr: "NY")
 
-      response = stub(
+      response = double(
         message: nil,
         street1: "street1 updated",
         street2: "street2 updated",
