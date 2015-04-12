@@ -11,14 +11,15 @@ Gem::Specification.new do |s|
   # s.email     = 'you@example.com'
   s.homepage    = 'http://www.godynamo.com'
 
-  #s.files       = `git ls-files`.split("\n")
-  #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files       = `git ls-files`.split("\n")
+  s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', '~> 2.4.7.beta'
-  s.add_dependency 'easypost', '2.0.11'
+  s.add_dependency 'spree_core', '~> 2.4'
+  s.add_dependency 'easypost', '2.1.0'
 
+  s.add_development_dependency 'spree_sample'
   s.add_development_dependency 'capybara', '~> 2.1'
   s.add_development_dependency 'coffee-rails'
   s.add_development_dependency 'database_cleaner'
