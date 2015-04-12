@@ -79,4 +79,6 @@ RSpec.configure do |config|
   end
 
   config.fail_fast = ENV['FAIL_FAST'] || false
+
+  config.infer_spec_type_from_file_location!
 end
