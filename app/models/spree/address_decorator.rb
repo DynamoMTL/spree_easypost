@@ -9,7 +9,12 @@ module Spree::AddressDecorator
 
 protected
   def validate_address
-    EasyPost::Address.create_and_verify(easy_post_attributes)
+    response = EasyPost::Address.create_and_verify(easy_post_attributes)
+
+    if response.message.present?
+      errors.add(:base, response.message)
+    end
+
   rescue EasyPost::Error => e
     errors.add(:base, e.message)
   end

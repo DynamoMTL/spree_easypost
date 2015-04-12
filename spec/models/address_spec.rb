@@ -19,5 +19,14 @@ describe Spree::Address do
       expect(address).to be_invalid
       expect(address.errors[:base]).to eq(['Address Not Found'])
     end
+
+    it "considers invalid, when message returned" do
+      response = stub(message: "Whooops")
+      expect(EasyPost::Address).to receive(:create_and_verify).and_return(response)
+      address = build(:address, country: usa )
+
+      expect(address).to be_invalid
+      expect(address.errors[:base]).to eq(['Whooops'])
+    end
   end
 end
