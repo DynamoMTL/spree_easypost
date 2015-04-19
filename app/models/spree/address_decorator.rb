@@ -9,7 +9,9 @@ module Spree::AddressDecorator
 
 protected
   def validate_address
-    Spree::EasyPost::AddressVerification.new(self).verify!
+    if address1_changed? || address2_changed? || city_changed? || state_id_changed? || state_name_changed? || country_id_changed? || zipcode_changed?
+      Spree::EasyPost::AddressVerification.new(self).verify!
+    end
   end
 end
 
